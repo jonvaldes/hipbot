@@ -3,6 +3,7 @@ package hipbot
 import (
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/mattn/go-xmpp"
 )
@@ -41,6 +42,15 @@ func NewBot(userJabberID, nickname, password string) (*Bot, error) {
 	var err error
 	b.c, err = options.NewClient()
 	return b, err
+}
+
+func (b *Bot) KeepAlive() {
+	go func() {
+		for {
+			time.Sleep(90 * time.Second)
+			b.c.Send(xmpp.Chat{})
+		}
+	}()
 }
 
 // JoinRoom tries to make the bot join a specific room. Room ID must

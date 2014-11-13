@@ -24,6 +24,8 @@ Example:
             b.Answer(m, "Echo "+m.Text)
         })
 
+        bot.KeepAlive() // So Hipchat doesn't kick us out after 3 minutes
+
         if err := bot.Listen(mux); err != nil {
             panic(err)
         }
