@@ -22,9 +22,9 @@ type Bot struct {
 
 // NewBot creates a new Bot instance. Please note that Jabber ID and
 // nickname must match the ones in the Hipchat acoount settings
-func NewBot(userJabberID, roomNickname, password string) (*Bot, error) {
+func NewBot(userJabberID, nickname, password string) (*Bot, error) {
 	b := &Bot{}
-	b.fullName = roomNickname
+	b.fullName = nickname
 
 	options := xmpp.Options{
 		Host:          "chat.hipchat.com:5222",
