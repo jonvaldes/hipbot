@@ -1,4 +1,4 @@
-package hpbot
+package hipbot
 
 import (
 	"regexp"
