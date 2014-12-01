@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mattn/go-xmpp"
+	xmpp "github.com/mattn/go-xmpp"
 )
 
 // Msg represents a message send or received
@@ -17,8 +17,9 @@ type Msg struct {
 
 // Bot is the main object used to interact with Hipchat
 type Bot struct {
-	c        *xmpp.Client
-	fullName string
+	c             *xmpp.Client
+	fullName      string
+	stopKeepAlive chan struct{}
 }
 
 // NewBot creates a new Bot instance. Please note that Jabber ID and
@@ -44,11 +45,20 @@ func NewBot(userJabberID, nickname, password string) (*Bot, error) {
 	return b, err
 }
 
+// KeepAlive launches a goroutine that keeps the connection from closing
 func (b *Bot) KeepAlive() {
 	go func() {
+		ticker := time.NewTicker(90 * time.Second)
+		b.stopKeepAlive = make(chan struct{})
+
 		for {
-			time.Sleep(90 * time.Second)
-			b.c.Send(xmpp.Chat{})
+			select {
+			case <-ticker.C:
+				b.c.Send(xmpp.Chat{})
+			case <-b.stopKeepAlive:
+				ticker.Stop()
+				return
+			}
 		}
 	}()
 }
@@ -90,6 +100,9 @@ func (b *Bot) Listen(l Listener) error {
 	for {
 		m, err := b.c.Recv()
 		if err != nil {
+			if b.stopKeepAlive != nil {
+				b.stopKeepAlive <- struct{}{}
+			}
 			return err
 		}
 
