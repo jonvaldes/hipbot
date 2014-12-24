@@ -66,7 +66,7 @@ func (b *Bot) KeepAlive() {
 // JoinRoom tries to make the bot join a specific room. Room ID must
 // match the one reported in the hipchat website
 func (b *Bot) JoinRoom(roomJabberID string) {
-	b.c.JoinMUC(roomJabberID + "/" + b.fullName)
+	b.c.JoinMUC(roomJabberID, b.fullName)
 }
 
 // SendDirect sends a message directly to one user
